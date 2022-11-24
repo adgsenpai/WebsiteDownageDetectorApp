@@ -33,7 +33,7 @@ class Navbar extends StatefulWidget implements PreferredSizeWidget {
       this.categoryTwo = "",
       this.tags,
       this.transparent = false,
-      this.rightOptions = true,
+      this.rightOptions = false,
       this.getCurrentPage,
       this.searchController,
       this.isOnSearch = false,

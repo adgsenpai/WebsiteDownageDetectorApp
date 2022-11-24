@@ -6,7 +6,8 @@ class CardHorizontal extends StatelessWidget {
       {this.title = "Placeholder Title",
       this.cta = "",
       this.img = "https://via.placeholder.com/200",
-      this.tap = defaultFunc});
+      this.tap = defaultFunc,
+      url});
 
   final String cta;
   final String img;

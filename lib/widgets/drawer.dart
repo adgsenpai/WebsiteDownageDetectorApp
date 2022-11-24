@@ -23,48 +23,17 @@ class MaterialDrawer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://images.unsplash.com/photo-1512529920731-e8abaea917a5?fit=crop&w=840&q=80"),
-                ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
-                  child: Text("ADG",
+                  child: Text("Website Downage Detector App",
                       style: TextStyle(color: Colors.white, fontSize: 21)),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                color: MaterialColors.label),
-                            child: Text("Pro",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16))),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16.0),
-                        child: Text("Seller",
-                            style: TextStyle(
-                                color: MaterialColors.muted, fontSize: 16)),
-                      ),
                       Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: Text("4.8",
-                                style: TextStyle(
-                                    color: MaterialColors.warning,
-                                    fontSize: 16)),
-                          ),
-                          Icon(Icons.star_border,
-                              color: MaterialColors.warning, size: 20)
-                        ],
+                        children: [],
                       )
                     ],
                   ),
@@ -85,14 +54,14 @@ class MaterialDrawer extends StatelessWidget {
                 title: "Home",
                 isSelected: currentPage == "Home" ? true : false),
             DrawerTile(
-                icon: Icons.person,
+                icon: Icons.settings,
                 onTap: () {
-                  if (currentPage != "Profile")
-                    Navigator.pushReplacementNamed(context, '/profile');
+                  if (currentPage != "Settings")
+                    Navigator.pushReplacementNamed(context, '/settings');
                 },
                 iconColor: Colors.black,
-                title: "Profile",
-                isSelected: currentPage == "Profile" ? true : false),
+                title: "Settings",
+                isSelected: currentPage == "Settings" ? true : false),
           ],
         ))
       ])),

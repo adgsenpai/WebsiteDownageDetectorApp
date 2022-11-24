@@ -1,118 +1,95 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-
 import 'package:material_kit_flutter/constants/Theme.dart';
-
 //widgets
 import 'package:material_kit_flutter/widgets/navbar.dart';
 import 'package:material_kit_flutter/widgets/card-horizontal.dart';
 import 'package:material_kit_flutter/widgets/card-small.dart';
 import 'package:material_kit_flutter/widgets/card-square.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
+import 'package:material_kit_flutter/database/db.dart';
+import 'package:material_kit_flutter/networking/network.dart';
+import 'dart:async';
 
-final Map<String, Map<String, String>> homeCards = {
-  "Ice Cream": {
-    "title": "Hardly Anything Takes More Coura...",
-    "image":
-        "https://images.unsplash.com/photo-1539314171919-908b0cd96f03?crop=entropy&w=840&h=840&fit=crop",
-    "price": "180"
-  },
-  "Makeup": {
-    "title": "Find the cheapest deals on our range...",
-    "image":
-        "https://images.unsplash.com/photo-1515709980177-7a7d628c09ba?crop=entropy&w=840&h=840&fit=crop",
-    "price": "220"
-  },
-  "Coffee": {
-    "title": "Looking for Men's watches?",
-    "image":
-        "https://images.unsplash.com/photo-1490367532201-b9bc1dc483f6?crop=entropy&w=840&h=840&fit=crop",
-    "price": "40"
-  },
-  "Fashion": {
-    "title": "Curious Blossom Skin Care Kit.",
-    "image":
-        "https://images.unsplash.com/photo-1536303006682-2ee36ba49592?crop=entropy&w=840&h=840&fit=crop",
-    "price": "188"
-  },
-  "Argon": {
-    "title": "Adjust your watch to your outfit.",
-    "image":
-        "https://images.unsplash.com/photo-1491336477066-31156b5e4f35?crop=entropy&w=840&h=840&fit=crop",
-    "price": "180"
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  Future<List<Website>> _websiteList;
+
+  void fetchWebsites() {
+    setState(() {
+      _websiteList = DBServices().websites();
+    });
   }
-};
 
-class Home extends StatelessWidget {
-  // final GlobalKey _scaffoldKey = new GlobalKey();
+  Future<String> getValidUrl(url) async {
+    final websiteChecking = WebsiteChecking();
+    final URI = Uri.parse(url);
+    final response = await websiteChecking.isValidLink(URI);
+    print(response);
+    return Future.delayed(Duration(seconds: 1), () => response);
+  }
+
+  Future<String> getScreenShot(url) async {
+    final websiteChecking = WebsiteChecking();
+    final screenshot = await websiteChecking.getScreenShot(url);
+    print(screenshot);
+    return Future.delayed(Duration(seconds: 1), () => screenshot);
+  }
+
+  void initState() {
+    setState(() {
+      _websiteList = DBServices().websites();
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: Navbar(
           title: "Home",
-          searchBar: true,
-          categoryOne: "Categories",
-          categoryTwo: "Best Deals",
         ),
-        backgroundColor: MaterialColors.bgColorScreen,
-        // key: _scaffoldKey,
         drawer: MaterialDrawer(currentPage: "Home"),
+        backgroundColor: MaterialColors.bgColorScreen,
         body: Container(
-          padding: EdgeInsets.only(left: 16.0, right: 16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: CardHorizontal(
-                      cta: "View article",
-                      title: homeCards["Ice Cream"]['title'],
-                      img: homeCards["Ice Cream"]['image'],
-                      tap: () {
-                        Navigator.pushReplacementNamed(context, '/pro');
-                      }),
-                ),
-                SizedBox(height: 8.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CardSmall(
-                        cta: "View article",
-                        title: homeCards["Makeup"]['title'],
-                        img: homeCards["Makeup"]['image'],
-                        tap: () {
-                          Navigator.pushReplacementNamed(context, '/pro');
-                        }),
-                    CardSmall(
-                        cta: "View article",
-                        title: homeCards["Coffee"]['title'],
-                        img: homeCards["Coffee"]['image'],
-                        tap: () {
-                          Navigator.pushReplacementNamed(context, '/pro');
-                        })
-                  ],
-                ),
-                SizedBox(height: 8.0),
-                CardHorizontal(
-                    cta: "View article",
-                    title: homeCards["Fashion"]['title'],
-                    img: homeCards["Fashion"]['image'],
-                    tap: () {
-                      Navigator.pushReplacementNamed(context, '/pro');
-                    }),
-                SizedBox(height: 8.0),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 32.0),
-                  child: CardSquare(
-                      cta: "View article",
-                      title: homeCards["Argon"]['title'],
-                      img: homeCards["Argon"]['image'],
-                      tap: () {
-                        Navigator.pushReplacementNamed(context, '/pro');
-                      }),
-                )
-              ],
+            child: SingleChildScrollView(
+                child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+              child: Text(
+                "Your Websites",
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: MaterialColors.caption),
+              ),
             ),
-          ),
-        ));
+            FutureBuilder(
+                future: _websiteList,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (context, index) {
+                          return CardHorizontal(
+                              cta: getScreenShot(snapshot.data[index].url)
+                                  .toString(),
+                              title: snapshot.data[index].name,
+                              img: getScreenShot(snapshot.data[index].url)
+                                  .toString());
+                        });
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                }),
+          ],
+        ))));
   }
 }
