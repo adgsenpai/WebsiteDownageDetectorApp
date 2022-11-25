@@ -116,8 +116,6 @@ class DBServices {
           [status, screenshot, id]);
     }
     print('Updated All Websites Status');
-
-    printWebsites();
   }
 
   //get max id
@@ -125,6 +123,17 @@ class DBServices {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('websites');
     return maps.length;
+  }
+
+  //get all website urls
+  Future<List<String>> getUrls() async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('websites');
+    List<String> urls = [];
+    for (var i = 0; i < maps.length; i++) {
+      urls.add(maps[i]['url']);
+    }
+    return urls;
   }
 }
 

@@ -117,6 +117,8 @@ class _SettingsState extends State<Settings> {
                             id: value + 1,
                             name: _websitename,
                             url: _websiteurl,
+                            screenshot:
+                                "https://cdn-icons-png.flaticon.com/128/159/159469.png",
                             status: "Unknown"));
                         //show dialog
                         showDialog(
@@ -189,6 +191,8 @@ class _SettingsState extends State<Settings> {
                                                   DBServices().deleteWebsite(
                                                       snapshot.data[index].id);
                                                   Navigator.of(context).pop();
+                                                  // refresh list
+                                                  fetchWebsites();
                                                 },
                                               ),
                                             ],

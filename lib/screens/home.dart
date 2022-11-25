@@ -18,13 +18,16 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   Future<List<Website>> _websiteList;
-
   void refreshTimer() {
     Timer.periodic(new Duration(seconds: 180), (timer) {
-      setState(() {
-        _websiteList = DBServices().websites();
-        print("refreshing");
-      });
+      try {
+        setState(() {
+          _websiteList = DBServices().websites();
+          print("refreshing");
+        });
+      } catch (e) {
+        print(e);
+      }
     });
   }
 

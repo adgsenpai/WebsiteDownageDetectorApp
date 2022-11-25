@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 // screens
 import 'package:material_kit_flutter/screens/home.dart';
 import 'package:material_kit_flutter/screens/settings.dart';
+import 'package:material_kit_flutter/background/bgm.dart';
 
-void main() => runApp(ADGSDK());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  BGM().runAppbackground();
+  runApp(ADGSDK());
+}
 
 class ADGSDK extends StatelessWidget {
   @override
