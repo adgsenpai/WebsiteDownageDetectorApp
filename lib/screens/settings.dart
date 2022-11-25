@@ -116,7 +116,8 @@ class _SettingsState extends State<Settings> {
                         DBServices().insertWebsite(Website(
                             id: value + 1,
                             name: _websitename,
-                            url: _websiteurl));
+                            url: _websiteurl,
+                            status: "Unknown"));
                         //show dialog
                         showDialog(
                             context: context,

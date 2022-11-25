@@ -19,25 +19,19 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   Future<List<Website>> _websiteList;
 
+  void refreshTimer() {
+    Timer.periodic(new Duration(seconds: 180), (timer) {
+      setState(() {
+        _websiteList = DBServices().websites();
+        print("refreshing");
+      });
+    });
+  }
+
   void fetchWebsites() {
     setState(() {
       _websiteList = DBServices().websites();
     });
-  }
-
-  Future<String> getValidUrl(url) async {
-    final websiteChecking = WebsiteChecking();
-    final URI = Uri.parse(url);
-    final response = await websiteChecking.isValidLink(URI);
-    print(response);
-    return Future.delayed(Duration(seconds: 1), () => response);
-  }
-
-  Future<String> getScreenShot(url) async {
-    final websiteChecking = WebsiteChecking();
-    final screenshot = await websiteChecking.getScreenShot(url);
-    print(screenshot);
-    return Future.delayed(Duration(seconds: 1), () => screenshot);
   }
 
   void initState() {
@@ -45,6 +39,7 @@ class _HomeState extends State<Home> {
       _websiteList = DBServices().websites();
     });
     super.initState();
+    refreshTimer();
   }
 
   @override
@@ -79,11 +74,9 @@ class _HomeState extends State<Home> {
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
                           return CardHorizontal(
-                              cta: getScreenShot(snapshot.data[index].url)
-                                  .toString(),
+                              cta: snapshot.data[index].status,
                               title: snapshot.data[index].name,
-                              img: getScreenShot(snapshot.data[index].url)
-                                  .toString());
+                              img: snapshot.data[index].screenshot);
                         });
                   } else {
                     return Center(child: CircularProgressIndicator());

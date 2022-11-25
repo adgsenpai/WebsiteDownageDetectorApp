@@ -10,11 +10,10 @@ class DBServices {
     // `path` package is best practice to ensure the path is correctly
     // constructed for each platform.
     join('lib', 'database', 'db.db'),
-    // When the database is first created, create a table to store dogs.
     onCreate: (db, version) {
       // Run the CREATE TABLE statement on the database.
       return db.execute(
-        "CREATE TABLE websites(id INTEGER PRIMARY KEY, name TEXT, url TEXT)",
+        "CREATE TABLE websites(id INTEGER PRIMARY KEY, name TEXT, url TEXT, screenshot TEXT, status TEXT)",
       );
     },
     // Set the version. This executes the onCreate function and provides a
@@ -64,18 +63,19 @@ class DBServices {
 
   //print  all websites
   void printWebsites() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('websites');
-    print(maps);
+    websites().then((value) => print(value));
   }
 
   //View all websites
   Future<List<Website>> websites() async {
     // Get a reference to the database.
+    updateWebsiteStatus();
+
     final Database db = await database;
     // Query the table for all The Websites.
     final List<Map<String, dynamic>> maps = await db.query('websites');
-    // Convert the List<Map<String, dynamic> into a List<Website>.
+
+    //update status
 
     //using the Website class toMap() method get also status and screenshot
     return List.generate(maps.length, (i) {
@@ -83,36 +83,11 @@ class DBServices {
         id: maps[i]['id'],
         name: maps[i]['name'],
         url: maps[i]['url'],
+        screenshot: maps[i]['screenshot'],
+        status: maps[i]['status'],
       );
     });
   }
-
-  Future<Map<String, dynamic>> getAllWebsites() async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('websites');
-    //using the Website class toMap() method get also status and screenshot
-    return List.generate(maps.length, (i) {
-      return Website(
-              id: maps[i]['id'], name: maps[i]['name'], url: maps[i]['url'])
-          .toMap()
-          .cast<String, dynamic>();
-    }).first;
-  }
-
-  //get max id
-  Future<int> getMaxId() async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('websites');
-    return maps.length;
-  }
-}
-
-class Website {
-  int id;
-  String name;
-  String url;
-
-  Website({this.id, this.name, this.url});
 
   Future<String> getValidUrl(url) async {
     final websiteChecking = WebsiteChecking();
@@ -127,13 +102,48 @@ class Website {
     return screenshot;
   }
 
+  void updateWebsiteStatus() async {
+    // update website status and screenshot by id
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('websites');
+    for (var i = 0; i < maps.length; i++) {
+      final id = maps[i]['id'];
+      final url = maps[i]['url'];
+      final status = await getValidUrl(url);
+      final screenshot = await getScreenShot(url);
+      await db.rawUpdate(
+          'UPDATE websites SET status = ?, screenshot = ? WHERE id = ?',
+          [status, screenshot, id]);
+    }
+    print('Updated All Websites Status');
+
+    printWebsites();
+  }
+
+  //get max id
+  Future<int> getMaxId() async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('websites');
+    return maps.length;
+  }
+}
+
+class Website {
+  int id;
+  String name;
+  String url;
+  String status;
+  String screenshot;
+
+  Website({this.id, this.name, this.url, this.status, this.screenshot});
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
       'url': url,
-      'status': getValidUrl(url),
-      'screenshot': getScreenShot(url)
+      'status': status,
+      'screenshot': screenshot,
     };
   }
 
@@ -141,6 +151,11 @@ class Website {
   // each website when using the print statement.
   @override
   String toString() {
-    return 'Website{id: $id, name: $name, url: $url}';
+    return 'Website{id: $id, name: $name, url: $url, status: $status, screenshot: $screenshot}';
   }
+}
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  DBServices().websites().then((value) => print(value));
 }
